@@ -13,3 +13,5 @@ In the project directory, you can run:
 2. To break down the component structure, I first wrote the code in table format and later designed components for it.
 
 3. The POST and PUT API were not working initially because the data format is not accpting department so I used phone key to store the department value and updated accordingly.
+
+4. Added Responsiveness for support for screens <768px , the list row are displayed in vertical format.
