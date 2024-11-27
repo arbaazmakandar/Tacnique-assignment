@@ -33,6 +33,7 @@ function User() {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+        alert("Error Fetching data");
       });
   }, []);
 
@@ -45,9 +46,29 @@ function User() {
       return;
     }
 
-    const newUser = { id: Date.now(), firstName, lastName, email, department };
-    setData((prevData) => [...prevData, newUser]);
-    alert("User  added successfully!");
+    const userData = {
+      name: `${firstName} ${lastName}`,
+      email,
+      phone: department,
+    };
+    axios
+      .post(API, userData)
+      .then((response) => {
+        const formattedData = {
+          id: response.data.id,
+          firstName: response.data.name.split(" ")[0],
+          lastName: response.data.name.split(" ")[1] || "",
+          email: response.data.email,
+          department: response.data.phone,
+        };
+
+        setData((prevData) => [...prevData, formattedData]);
+        alert("User  added successfully!");
+      })
+      .catch((error) => {
+        console.error("Error adding user:", error);
+        alert("Error adding user");
+      });
 
     setFirstName("");
     setLastName("");
@@ -57,7 +78,6 @@ function User() {
 
   // Edit an existing user
   const handleEditClick = (user) => {
-    console.log("Editing user:", user);
     setEditingUserId(user.id);
     setUpdatedFirstName(user.firstName);
     setUpdatedLastName(user.lastName);
@@ -68,6 +88,7 @@ function User() {
   const handleEditSubmit = (e) => {
     e.preventDefault();
 
+    // Check for required fields
     if (
       !updatedFirstName ||
       !updatedLastName ||
@@ -78,20 +99,35 @@ function User() {
       return;
     }
 
-    setData((prevData) =>
-      prevData.map((user) =>
-        user.id === editingUserId
-          ? {
-              ...user,
-              firstName: updatedFirstName,
-              lastName: updatedLastName,
-              email: updatedEmail,
-              department: updatedDepartment,
-            }
-          : user
-      )
-    );
-    alert("User  updated successfully!");
+    // Prepare the updated user data for the API
+    const updatedUserData = {
+      name: `${updatedFirstName} ${updatedLastName}`,
+      email: updatedEmail,
+      phone: updatedDepartment,
+    };
+
+    // Make the API call to update the user
+    axios
+      .put(`${API}/${editingUserId}`, updatedUserData)
+      .then((response) => {
+        const formattedData = {
+          id: response.data.id,
+          firstName: response.data.name.split(" ")[0],
+          lastName: response.data.name.split(" ")[1] || "",
+          email: response.data.email,
+          department: response.data.phone,
+        };
+
+        setData((prevData) =>
+          prevData.map((user) =>
+            user.id === editingUserId ? formattedData : user
+          )
+        );
+      })
+      .catch((error) => {
+        console.error("Error updating user:", error);
+        alert("Error updating user");
+      });
 
     setEditingUserId(null);
     setUpdatedFirstName("");
@@ -99,11 +135,18 @@ function User() {
     setUpdatedEmail("");
     setUpdatedDepartment("");
   };
-
   // Delete a user
   const handleDelete = (id) => {
-    setData((prevData) => prevData.filter((user) => user.id !== id));
-    alert("User  deleted successfully!");
+    axios
+      .delete(`${API}/${id}`)
+      .then(() => {
+        setData((prevData) => prevData.filter((user) => user.id !== id));
+        alert("User  deleted successfully!");
+      })
+      .catch((error) => {
+        console.error("Error deleting user:", error);
+        alert("Error deleting user");
+      });
   };
   const handleEditChange = (field, value) => {
     switch (field) {
