@@ -2,9 +2,11 @@
 
 In the project directory, you can run:
 
-### `npm install && npm run start`
+ `npm install && npm run start`
 
-The Challenges feaced by me during the project were:
+
+
+## The Challenges faced by me during the project were:
 
 1. The form was not updating correctly on edit and adding of user. I realized I was not putting the data correctly. I used console.logs do find the error and accordingly updated the code.
 
